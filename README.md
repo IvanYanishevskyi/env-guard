@@ -24,26 +24,8 @@ envguard check
 
 ---
 
-## Why
-
-Most local failures are boring:
-
-- `.env` not loaded  
-- DB not running  
-- wrong API key  
-- service not reachable  
-
-You usually find out **after** the app crashes.
-
-`env-guard` flips that:
-you get a fast, clear check upfront.
-
----
-
-## Example
-
-```text
-───────────────  pre-flight check ───────────────
+```
+─────────────── pre-flight check ───────────────
 
   ENV VARS
   ✓  OPENAI_API_KEY       present
