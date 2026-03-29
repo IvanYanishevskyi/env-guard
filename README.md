@@ -10,7 +10,7 @@ pip install envguard
 ---
 
 ```
-─────────────── pandora-ai — pre-flight check ───────────────
+───────────────  pre-flight check ───────────────
 
   ENV VARS
   ✓  OPENAI_API_KEY       present
