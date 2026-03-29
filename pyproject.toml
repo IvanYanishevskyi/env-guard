@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "env-guard-checker"
+version = "0.1.3"
+authors = [{name="Ivan"}]
+description = "Pre-flight environment checks. Like Pydantic, but for your infra."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+keywords = ["devops", "deployment", "environment", "cli", "validation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration",
+]
+dependencies = [
+    "pyyaml>=6.0",
+    "requests>=2.28",
+    "rich>=13.0",
+    "typer>=0.12",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-mock>=3.0",
+    "responses>=0.25",
+]
+
+[project.scripts]
+envguard = "cli:app"
+
+[project.urls]
+Homepage = "https://github.com/IvanYanishevskyi/env-guard"
+Issues = "https://github.com/IvanYanishevskyi/env-guard"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["*"]
