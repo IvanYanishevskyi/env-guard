@@ -3,8 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/env-guard-checker)](https://pypi.org/project/env-guard-checker/)
 [![Python](https://img.shields.io/pypi/pyversions/env-guard-checker)](https://pypi.org/project/env-guard-checker/)
 [![License](https://img.shields.io/github/license/IvanYanishevskyi/env-guard)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/IvanYanishevskyi/env-guard/ci.yml?branch=main)]()
-
+[![CI](https://img.shields.io/github/actions/workflow/status/IvanYanishevskyi/env-guard/ci.yml?branch=main)](https://github.com/IvanYanishevskyi/env-guard/actions)
 Lightweight pre-flight checks for Python projects.
 
 Catch missing env vars, dead services and broken endpoints  
