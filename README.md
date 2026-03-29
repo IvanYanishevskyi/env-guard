@@ -1,15 +1,49 @@
-# envguard
+# env-guard
 
-Pre-flight environment validation for Python projects.  
-Checks env vars, TCP ports, HTTP endpoints and files — before you deploy.
+[![PyPI](https://img.shields.io/pypi/v/env-guard-checker)](https://pypi.org/project/env-guard-checker/)
+[![Python](https://img.shields.io/pypi/pyversions/env-guard-checker)](https://pypi.org/project/env-guard-checker/)
+[![License](https://img.shields.io/github/license/IvanYanishevskyi/env-guard)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/IvanYanishevskyi/env-guard/ci.yml?branch=main)]()
 
+Lightweight pre-flight checks for Python projects.
+
+Catch missing env vars, dead services and broken endpoints  
+*before* you start your app.
+
+---
+
+## Install
+
+```bash
+pip install env-guard-checker
 ```
-pip install envguard
+
+CLI:
+```bash
+envguard check
 ```
 
 ---
 
-```
+## Why
+
+Most local failures are boring:
+
+- `.env` not loaded  
+- DB not running  
+- wrong API key  
+- service not reachable  
+
+You usually find out **after** the app crashes.
+
+`env-guard` flips that:
+you get a fast, clear check upfront.
+
+---
+
+## Example
+
+```text
 ───────────────  pre-flight check ───────────────
 
   ENV VARS
@@ -30,43 +64,23 @@ pip install envguard
   Run with --hints for suggestions.
 ```
 
-## Contents
-
-- [Installation](#installation)
-- [Quickstart](#quickstart)
-- [Config reference](#config-reference)
-- [CLI](#cli)
-- [Makefile / CI](#makefile--ci)
-- [Contributing](#contributing)
-- [Known issues](#known-issues)
-
 ---
-
-## Installation
-
-```bash
-pip install envguard
-```
-
-Requires Python 3.9+.
 
 ## Quickstart
 
 ```bash
-# generate a starter envguard.yaml
 envguard init
-
-# run checks
 envguard check
-
-# show fix suggestions for failures
 envguard check --hints
 ```
 
-envguard walks up the directory tree looking for `envguard.yaml` automatically.  
-If a `.env` file exists in the current directory, it's loaded before checks run.
+- auto-detects config  
+- loads `.env`  
+- works in CI  
 
-## Config reference
+---
+
+## Config
 
 ```yaml
 name: my-app
@@ -80,126 +94,54 @@ env_vars:
     required: true
     validate: contains:postgresql
 
-  - key: DEBUG
-    required: false        # skipped if missing, won't fail
-
 tcp_ports:
   - host: localhost
     port: 5432
-    label: PostgreSQL      # shown in output instead of host:port
-    timeout: 3.0           # seconds, default 3.0
+    label: PostgreSQL
 
 http_endpoints:
   - url: http://localhost:8000/health
     expect_status: 200
-    timeout: 5.0
 
 files:
   - path: .env
     type: file
-  - path: ./data
-    type: directory
 ```
 
-### `validate` rules for env vars
+---
 
-| Rule | Example | Description |
-|---|---|---|
-| `starts_with:<s>` | `starts_with:sk-` | value must start with `s` |
-| `ends_with:<s>` | `ends_with:.local` | value must end with `s` |
-| `contains:<s>` | `contains:postgresql` | value must contain `s` |
-| `min_length:<n>` | `min_length:32` | value length must be ≥ n |
-
-## CLI
-
-```
-envguard check                     run all checks
-envguard check --hints             show hints for failed checks
-envguard check -c path/to/file     use a specific config file
-envguard init                      generate a starter config
-envguard init --name my-app        set project name
-```
-
-Exit code: `0` if all checks pass, `1` if any fail.
-
-## Makefile / CI
-
-```makefile
-deploy:
-	envguard check || exit 1
-	docker compose up -d
-```
+## CI example
 
 ```yaml
-# .github/workflows/deploy.yml
-- name: Pre-flight check
-  run: envguard check
+name: envguard
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install env-guard-checker
+      - run: envguard check
 ```
 
 ---
 
-## Contributing
+## Notes
 
-Issues and pull requests are welcome.
+This is intentionally simple.
 
-### Reporting a bug
-
-Before opening an issue, check [existing issues](../../issues) to avoid duplicates.
-
-A good bug report includes:
-- envguard version (`pip show envguard`)
-- Python version and OS
-- your `envguard.yaml` (redact secrets)
-- full output with `envguard check`
-- what you expected to happen
-
-### Suggesting a feature
-
-Open an issue with the `enhancement` label.  
-Describe the use case, not just the feature — it helps figure out the right solution.
-
-### Sending a pull request
-
-```bash
-git clone https://github.com/IvanYanishevskyi/env-guard§
-cd envguard
-pip install -e ".[dev]"
-```
-
-A few ground rules:
-
-- one PR per feature or fix
-- add a test for new behavior
-- don't bump the version — that happens on release
-- if you're fixing a bug, reference the issue number in the PR description
-
-Not sure if a change is in scope? Open an issue first and ask.
-
-### Adding a new check type
-
-Check implementations live in `envguard/checks/`.  
-Each check is a function that takes a spec dataclass and returns a `CheckResult`.  
-See `envguard/checks/tcp.py` for a minimal example.
-
-To add a new check type end-to-end:
-1. add a dataclass to `models.py`
-2. implement the check in `checks/your_check.py`
-3. wire it into `runner.py` and `loader.py`
-4. add it to the reporter sections in `reporter.py`
-5. write tests in `tests/`
-
----
-
-## Known issues
-
-- **HTTP redirects** — followed by default, no config option to disable yet
-- **Windows** — not tested; path handling in file checks may have edge cases
-- **`min_length` with non-integer arg** — fails silently instead of raising a clear error
-
-If you hit something not listed here, please [open an issue](../../issues/new).
+It’s not a security tool and not a secret scanner.  
+Just a quick sanity check that saves time.
 
 ---
 
 ## License
 
-[MIT](LICENSE)
+MIT
